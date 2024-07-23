@@ -1,0 +1,43 @@
+services:
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    # network_mode: host
+    ports:
+      # Public HTTP Port
+      - 80:80
+      # Public HTTPS Port
+      - 443:443
+      # Admin Web Port
+      - 81:81
+
+    environment:
+      PUID: 1000
+      PGID: 1000
+
+    volumes:
+      - /home/${USER}/docker/files/nginx/data:/data
+      - /home/${USER}/docker/files/nginx/letsencrypt:/etc/letsencrypt
+
+  wg-easy:
+    image: ghcr.io/wg-easy/wg-easy:latest
+    container_name: wg-easy
+    volumes:
+      - /home/${USER}/docker/files/wg-easy:/etc/wireguard
+    environment:
+      TZ: ${TIMEZONE}
+      WG_HOST: ${WIREGUARD_HOST}
+      PASSWORD: ${WIREGUARD_PASSWORD}
+    ports:
+      - 51820:51820/udp
+      
+      # Web UI
+      - 51821:51821/tcp
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
