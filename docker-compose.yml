@@ -3,7 +3,7 @@ services:
     image: ghcr.io/wg-easy/wg-easy:latest
     container_name: wg-easy
     volumes:
-      - /home/${USER}/docker/files/wg-easy:/etc/wireguard
+      - /home/docker/appdata/wg-easy:/etc/wireguard
     environment:
       TZ: ${TIMEZONE}
       WG_HOST: ${WIREGUARD_HOST}
